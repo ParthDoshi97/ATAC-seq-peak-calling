@@ -1,68 +1,119 @@
-# Snakefile for downloading data and Perform Quality Check 
-
-# load Requried Library 
+# load required library
 import pandas as pd
 
-# Load information about Sample names and their paired-end file names
-file_path = r"C:\Users\Parth Doshi\Desktop\ATAC-seq\ATAC-seq-peak-calling\Sample_Paired_end_Info.csv"
-Paired_end_info = pd.read_csv(file_path, sep=",")
-
-# Create a list of tuples containing paired-end reads
-Reads = list(zip(Paired_end_info['File accession'], Paired_end_info['Paired with']))
+# Function to load sample information and return paired reads
+def load_sample_pairs():
+    file_path = "C:/Users/Parth Doshi/Desktop/ATAC-seq/ATAC-seq-peak-calling/Sample_Paired_end_Info.csv"
+    paired_end_info = pd.read_csv(file_path)
+    return list(zip(paired_end_info['File accession'], paired_end_info['Paired with']))
 
 # Rule to download data files based on URLs listed in files.txt
 rule download_raw_files:
     input:
-        "files.txt"  # Input file containing URLs of data files to be downloaded
+        "files.txt"
     output:
-        expand(
-            "DATA/{filename}",
-            filename=[line.split('/')[-1] for line in open("files.txt").read().splitlines()]
-        )
+        expand("DATA/{filename}", filename=[line.split('/')[-1] for line in open("files.txt").read().splitlines()])
     shell:
         """
-        # Use xargs and curl to download files from URLs in 'files.txt'
         xargs -L 1 curl -O -J -L < {input}
         """
 
-# Rule to perform quality control using FastQC within a Docker container
+# Rule to perform quality control using FastQC
 rule fastqc:
     input:
-        read1="DATA/{read1}",  # First paired-end read
-        read2="DATA/{read2}"   # Second paired-end read
+        expand("DATA/{{sample}}")
     output:
-        report1="fastqc_reports/{read1}_fastqc.html",  # FastQC report for the first read
-        report2="fastqc_reports/{read2}_fastqc.html"   # FastQC report for the second read
+        html="fastqc_reports/{sample}_fastqc.html"
     params:
-        outdir="fastqc_reports"  # Directory for FastQC reports
+        outdir="fastqc_reports"
     container:
-        "yourdockerhubuser/your-fastqc-image:latest"  # Replace with your Docker image name and tag
+             "doshiparth2219822/bioinformatics-tool:latest"
     shell:
         """
-        # Run FastQC for both reads and save reports in the specified directory
-        fastqc {input.read1} --outdir {params.outdir}
-        fastqc {input.read2} --outdir {params.outdir}
+        fastqc {input} --outdir {params.outdir}
         """
 
 # Rule to orchestrate quality control for each paired read
 rule qc_each_pair:
     input:
-        lambda wildcards: Reads  # Input: List of paired-end reads
+        load_sample_pairs
     output:
-        expand(
-            "fastqc_reports/{sample}_fastqc.html",
-            sample=[read for pair in Reads for read in pair]
-        )
-    run:
-        for read1, read2 in Reads:
-            # Invoke the 'fastqc' rule for each paired-end read by calling the Snakemake CLI
-            shell(f"snakemake fastqc read1=DATA/{read1} read2=DATA/{read2}")
-
+        expand("fastqc_reports/{sample}_fastqc.html", sample=lambda wc: [read for pair in load_sample_pairs() for read in pair])
+    shell:
+        """
+        for read in {input}:
+            snakemake fastqc sample={read}
+        """
 
 # Rule to aggregate all final targets
 rule all:
     input:
-        expand(
-            "fastqc_reports/{sample}_fastqc.html",
-            sample=[read for pair in Reads for read in pair]
-        )
+        expand("fastqc_reports/{sample}_fastqc.html", sample=lambda wc: [read for pair in load_sample_pairs() for read in pair])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

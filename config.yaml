@@ -4,23 +4,16 @@ results_dir: "/home/ubuntu/ATAC-seq-peak-calling/Results"
 fastqc_dir: "/home/ubuntu/ATAC-seq-peak-calling/Results/fastqc"
 multiqc_dir: "/home/ubuntu/ATAC-seq-peak-calling/Results/multiqc"
 trim_dir: "/home/ubuntu/ATAC-seq-peak-calling/Results/trim_reads"
-filter_dir: "/home/ubuntu/ATAC-seq-peak-calling/Results/filter_reads"
+align_dir: "/home/ubuntu/ATAC-seq-peak-calling/Results/align_reads"
+filter_dir: "/home/ubuntu/ATAC-seq-peak-calling/Results/filter_align_reads"
+peak_dir: "/home/ubuntu/ATAC-seq-peak-calling/Results/Peak"
 samples:
-  ENCFF272LNY:
+  sample1:
     pair1: "ENCFF370VYU.fastq.gz"
     pair2: "ENCFF272LNY.fastq.gz"
-  ENCFF370VYU:
-    pair1: "ENCFF370VYU.fastq.gz"
-    pair2: "ENCFF272LNY.fastq.gz"
-  ENCFF803YGT:
+  sample2:
     pair1: "ENCFF803YGT.fastq.gz"
     pair2: "ENCFF919BOD.fastq.gz"
-  ENCFF919BOD:
-    pair1: "ENCFF803YGT.fastq.gz"
-    pair2: "ENCFF919BOD.fastq.gz"
-  ENCFF991KGU:
-    pair1: "ENCFF991KGU.fastq.gz"
-    pair2: "ENCFF819NFW.fastq.gz"
-  ENCFF819NFW:
+  sample3:
     pair1: "ENCFF991KGU.fastq.gz"
     pair2: "ENCFF819NFW.fastq.gz"

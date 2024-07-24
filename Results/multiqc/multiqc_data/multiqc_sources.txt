@@ -1,7 +1,0 @@
-Module	Section	Sample Name	Source
-FastQC	all_sections	ENCFF272LNY	/home/ubuntu/ATAC-seq-peak-calling/Results/fastqc/ENCFF272LNY_fastqc.zip
-FastQC	all_sections	ENCFF919BOD	/home/ubuntu/ATAC-seq-peak-calling/Results/fastqc/ENCFF919BOD_fastqc.zip
-FastQC	all_sections	ENCFF370VYU	/home/ubuntu/ATAC-seq-peak-calling/Results/fastqc/ENCFF370VYU_fastqc.zip
-FastQC	all_sections	ENCFF803YGT	/home/ubuntu/ATAC-seq-peak-calling/Results/fastqc/ENCFF803YGT_fastqc.zip
-FastQC	all_sections	ENCFF819NFW	/home/ubuntu/ATAC-seq-peak-calling/Results/fastqc/ENCFF819NFW_fastqc.zip
-FastQC	all_sections	ENCFF991KGU	/home/ubuntu/ATAC-seq-peak-calling/Results/fastqc/ENCFF991KGU_fastqc.zip

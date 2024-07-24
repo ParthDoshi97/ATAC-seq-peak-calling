@@ -1,0 +1,27 @@
+configfile: "config.yaml"
+
+# Rule to specify the final target
+rule all:
+    input:
+        expand("{trim_dir}/{sample}_trimmed_R1.fastq.gz", sample=config["samples"].keys(), trim_dir=config["trim_dir"]),
+        expand("{trim_dir}/{sample}_trimmed_R2.fastq.gz", sample=config["samples"].keys(), trim_dir=config["trim_dir"])
+
+# Rule to Trim the reads
+rule trim_reads:
+    input:
+        pair1 = lambda wildcards: f"{config['download_dir']}/{config['samples'][wildcards.sample]['pair1']}",
+        pair2 = lambda wildcards: f"{config['download_dir']}/{config['samples'][wildcards.sample]['pair2']}",
+        adapters = "/home/ubuntu/ATAC-seq-peak-calling/TruSeq3-PE.fa"
+    output:
+        trimmed_pair1 = "{trim_dir}/{sample}_trimmed_R1.fastq.gz",
+        trimmed_pair2 = "{trim_dir}/{sample}_trimmed_R2.fastq.gz"
+    singularity:
+        "/home/ubuntu/bioinformatic_tools_docker/bio_tool_container.sif"
+    shell:
+        """
+        trimmomatic PE -threads 4 \
+        {input.pair1} {input.pair2} \
+        {output.trimmed_pair1} /dev/null \
+        {output.trimmed_pair2} /dev/null \
+        ILLUMINACLIP:{input.adapters}:2:30:10 SLIDINGWINDOW:4:20 MINLEN:30
+        """

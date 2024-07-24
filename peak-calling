@@ -1,0 +1,29 @@
+import yaml
+
+# Load the configuration file
+configfile: "config.yaml"
+
+# Define wildcard constraints
+wildcard_constraints:
+    sample="|".join(config["samples"].keys())
+
+# Rule all
+rule all:
+    input:
+        expand(f"{config['peak_dir']}/{{sample}}_peaks.narrowPeak", sample=config['samples'].keys())
+
+# Rule to call peaks using MACS2
+rule call_peaks:
+    input:
+        bam = f"{config['filter_dir']}/{{sample}}.dedup.bam"
+    output:
+        narrowPeak = f"{config['peak_dir']}/{{sample}}_peaks.narrowPeak",
+        summits = f"{config['peak_dir']}/{{sample}}_summits.bed"
+    params:
+        peak_dir=config['peak_dir']
+    singularity:
+        "/home/ubuntu/bioinformatic_tools_docker/biotools_container.sif"
+    shell:
+        """
+        macs2 callpeak -t {input.bam} -f BAM -n {wildcards.sample} --outdir {params.peak_dir} -g hs
+        """

@@ -1,0 +1,84 @@
+# Load configuration file
+configfile: "config.yaml"
+
+# Define wildcard constraints
+wildcard_constraints:
+    sample="|".join(config["samples"].keys())
+
+# Rule all
+rule all:
+    input:
+        expand(f"{config['filter_dir']}/{{sample}}.dedup.bam", sample=config['samples'].keys())
+
+# Rule to create index file
+rule index:
+    input:
+        "hg38.fa.gz"
+    output:
+        "hg38.1.bt2",
+        "hg38.2.bt2",
+        "hg38.3.bt2",
+        "hg38.4.bt2",
+        "hg38.rev.1.bt2",
+        "hg38.rev.2.bt2"
+    singularity:
+        "/home/ubuntu/bioinformatic_tools_docker/biotools_container.sif"
+    shell:
+        """
+        bowtie2-build {input} hg38
+        """
+
+# Rule to align paired-end reads
+rule align_reads:
+    input:
+        pair1 = lambda wildcards: f"{config['trim_dir']}/{wildcards.sample}_trimmed_R1.fastq.gz",
+        pair2 = lambda wildcards: f"{config['trim_dir']}/{wildcards.sample}_trimmed_R2.fastq.gz",
+        index = [
+            "hg38.1.bt2",
+            "hg38.2.bt2",
+            "hg38.3.bt2",
+            "hg38.4.bt2",
+            "hg38.rev.1.bt2",
+            "hg38.rev.2.bt2"
+        ]
+    output:
+        bam = f"{config['align_dir']}/{{sample}}.bam"
+    singularity:
+        "/home/ubuntu/bioinformatic_tools_docker/biotools_container.sif"
+    shell:
+        """
+        bowtie2 -x hg38 -1 {input.pair1} -2 {input.pair2} | samtools view -Sb - > {output.bam}
+        """
+
+# Rule to sort BAM files
+rule sort_bam:
+    input:
+        bam = f"{config['align_dir']}/{{sample}}.bam"
+    output:
+        sorted_bam = f"{config['align_dir']}/{{sample}}.sorted.bam"
+    singularity:
+        "/home/ubuntu/bioinformatic_tools_docker/biotools_container.sif"
+    shell:
+        """
+        samtools sort -o {output.sorted_bam} {input.bam}
+        """
+
+# Rule to mark duplicates and save deduplicated BAM in filter_dir
+rule mark_duplicates:
+    input:
+        bam = f"{config['align_dir']}/{{sample}}.sorted.bam"
+    output:
+        bam = f"{config['filter_dir']}/{{sample}}.dedup.bam",
+        metrics = f"{config['filter_dir']}/{{sample}}.dedup.metrics"
+    singularity:
+        "/home/ubuntu/bioinformatic_tools_docker/biotools_container.sif"
+    shell:
+        """
+        java -jar /opt/picard.jar MarkDuplicates \
+            I={input.bam} \
+            O={output.bam} \
+            M={output.metrics} \
+            REMOVE_DUPLICATES=true \
+            ASSUME_SORTED=true \
+            VALIDATION_STRINGENCY=SILENT
+        """

@@ -71,7 +71,3 @@ The pipeline generates several output directories as specified in the `config.ya
 
 ### Contribution
 Contributions are welcome! Please submit a pull request or open an issue to discuss changes.
-
-### License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```

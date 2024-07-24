@@ -1,0 +1,7 @@
+"https://www.encodeproject.org/metadata/?type=Experiment&%40id=%2Fexperiments%2FENCSR956DNB%2F&files.output_type=reads&files.output_category=raw+data"
+https://www.encodeproject.org/files/ENCFF991KGU/@@download/ENCFF991KGU.fastq.gz
+https://www.encodeproject.org/files/ENCFF819NFW/@@download/ENCFF819NFW.fastq.gz
+https://www.encodeproject.org/files/ENCFF803YGT/@@download/ENCFF803YGT.fastq.gz
+https://www.encodeproject.org/files/ENCFF272LNY/@@download/ENCFF272LNY.fastq.gz
+https://www.encodeproject.org/files/ENCFF919BOD/@@download/ENCFF919BOD.fastq.gz
+https://www.encodeproject.org/files/ENCFF370VYU/@@download/ENCFF370VYU.fastq.gz

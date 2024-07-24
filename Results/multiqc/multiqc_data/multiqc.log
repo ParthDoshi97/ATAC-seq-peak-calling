@@ -1,0 +1,6 @@
+[2024-06-23 12:56:45,444] multiqc.core.version_check                         [WARNING]  MultiQC Version v1.22.3 now available!
+[2024-06-23 12:56:45,445] multiqc.core.file_search                           [INFO   ]  Search path: /home/ubuntu/ATAC-seq-peak-calling/Results/fastqc
+[2024-06-23 12:56:45,616] multiqc.modules.fastqc.fastqc                      [INFO   ]  Found 6 reports
+[2024-06-23 12:56:45,892] multiqc.core.write_results                         [INFO   ]  Data        : Results/multiqc/multiqc_data
+[2024-06-23 12:56:46,154] multiqc.core.write_results                         [INFO   ]  Report      : Results/multiqc/multiqc_report.html
+[2024-06-23 12:56:46,158] multiqc.multiqc                                    [INFO   ]  MultiQC complete

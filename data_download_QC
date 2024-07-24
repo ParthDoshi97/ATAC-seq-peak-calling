@@ -1,0 +1,47 @@
+configfile: "config.yaml"
+
+# Rule to specify the final target
+rule all:
+    input:
+        expand("{multiqc_dir}/multiqc_report.html", multiqc_dir=config["multiqc_dir"])
+
+# Rule to download data
+rule download:
+    input:
+        config["file"]
+    output:
+        expand("{download_dir}/{sample}.fastq.gz", download_dir=config["download_dir"], sample=config["sample"]) + [config["metadata_file"]]
+    shell:
+        """
+        python download_data.py {input} {config[download_dir]}
+        ls {config[download_dir]}
+        """
+
+# Rule to run FastQC
+rule fastqc:
+    input:
+        expand("{download_dir}/{sample}.fastq.gz", download_dir=config["download_dir"], sample=config["sample"])
+    output:
+        expand("{fastqc_dir}/{sample}_fastqc.zip", fastqc_dir=config["fastqc_dir"], sample=config["sample"]),
+        expand("{fastqc_dir}/{sample}_fastqc.html", fastqc_dir=config["fastqc_dir"], sample=config["sample"])
+    singularity:
+        "/home/ubuntu/bioinformatic_tools_docker/bio_tool_container.sif"
+    shell:
+        """
+        mkdir -p {config[fastqc_dir]}
+        fastqc -o {config[fastqc_dir]} {input}
+        """
+
+# Rule to run MultiQC
+rule multiqc:
+    input:
+        expand("{fastqc_dir}/{sample}_fastqc.zip", fastqc_dir=config["fastqc_dir"], sample=config["sample"])
+    output:
+        expand("{multiqc_dir}/multiqc_report.html", multiqc_dir=config["multiqc_dir"])
+    singularity:
+        "/home/ubuntu/bioinformatic_tools_docker/bio_tool_container.sif"
+    shell:
+        """
+        mkdir -p {config[multiqc_dir]}
+        multiqc {config[fastqc_dir]} -o {config[multiqc_dir]}
+        """
